@@ -19,6 +19,3 @@ def GetProxyList():
             AllProxy += row.text
     AllProxy = AllProxy.split(' ')
     return AllProxy
-
-
-print(GetProxyList())
