@@ -35,10 +35,10 @@ def checkProxies(listProxy):
         proxy={'http':proxy}
         try:
             response=requests.get(url,proxies=proxy,timeout=5)
-            print("~")
+            #print("~")
             if "Where the world" in str(response.text):
                 goodProxies.append(proxy)
-                print(str(response.text))
+                #print(str(response.text))
                 response=''
         except:
             continue
@@ -47,6 +47,6 @@ def checkProxies(listProxy):
 
 
 
-proxies=GetProxy()
-checkedProxies=checkProxies(proxies)
-print(checkedProxies)
+#proxies=GetProxy()
+#checkedProxies=checkProxies(proxies)
+#print(checkedProxies)
