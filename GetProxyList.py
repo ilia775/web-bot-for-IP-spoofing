@@ -13,6 +13,6 @@ def GetProxy():
         Proxy += row.text + ':'
         i += 1
         row = Table[i]
-        Proxy += row.text + ' '
+        Proxy += row.text
         AllProxy.append(Proxy)
     return AllProxy
