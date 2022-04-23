@@ -58,12 +58,10 @@ async def CheckProxy(ipport):
          #print(resp.status)
          if resp.status != 200:
             raise "Error"
-         #print(bcolors.OKBLUE + "Working:", ipport + bcolors.ENDC)
          GoodProxies.append(ipport)
      except:
          print(2)
          await session.close()
-         #print(bcolors.FAIL + "Not Working:", ipport + bcolors.ENDC)
 
 
 async def GetData():
