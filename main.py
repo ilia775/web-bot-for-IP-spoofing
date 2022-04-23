@@ -15,15 +15,6 @@ GoodProxies = []
 AllProxy = []
 CurrentProxy = 0
 
-class bcolors:
-    HEADER = '\033[95m'
-    OKBLUE = '\033[94m'
-    OKGREEN = '\033[92m'
-    WARNING = '\033[93m'
-    FAIL = '\033[91m'
-    ENDC = '\033[0m'
-    BOLD = '\033[1m'
-    UNDERLINE = '\033[4m'
 
 def GetAllProxy():
     urls=["https://www.socks-proxy.net/", "https://free-proxy-list.net/", "https://www.us-proxy.org/", "https://free-proxy-list.net/uk-proxy.html", "https://www.sslproxies.org/", "https://free-proxy-list.net/anonymous-proxy.html"]
@@ -56,12 +47,10 @@ async def is_bad_proxy(ipport):
          #print(resp.status)
          if resp.status != 200:
             raise "Error"
-         #print(bcolors.OKBLUE + "Working:", ipport + bcolors.ENDC)
          GoodProxies.append(ipport)
      except:
          print(2)
          await session.close()
-         #print(bcolors.FAIL + "Not Working:", ipport + bcolors.ENDC)
 
 
 async def GetData():
@@ -88,17 +77,6 @@ def CheckProxies():
         tasks.append(asyncio.ensure_future(is_bad_proxy(item)))
     loop.run_until_complete(asyncio.wait(tasks))
     loop.close()
-#GetAllProxy()
-#loop = asyncio.get_event_loop()
-#tasks = []
-#for item in AllProxy:
-#    tasks.append(asyncio.ensure_future(is_bad_proxy(item)))
-#print(bcolors.HEADER + "Starting... \n" + bcolors.ENDC)
-#oop.run_until_complete(asyncio.wait(tasks))
-#print(bcolors.HEADER + "\n...Finished" + bcolors.ENDC)
-#print(AllProxy)
-#print(GoodProxies)
-#loop.close()
 GetAllProxy()
 CheckProxies()
 t = time.time()
