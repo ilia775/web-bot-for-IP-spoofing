@@ -91,17 +91,6 @@ def CheckProxies():
         tasks.append(asyncio.ensure_future(CheckProxy(item)))
     loop.run_until_complete(asyncio.wait(tasks))
     loop.close()
-#GetAllProxy()
-#loop = asyncio.get_event_loop()
-#tasks = []
-#for item in AllProxy:
-#    tasks.append(asyncio.ensure_future(is_bad_proxy(item)))
-#print(bcolors.HEADER + "Starting... \n" + bcolors.ENDC)
-#oop.run_until_complete(asyncio.wait(tasks))
-#print(bcolors.HEADER + "\n...Finished" + bcolors.ENDC)
-#print(AllProxy)
-#print(GoodProxies)
-#loop.close()
 GetAllProxy()
 CheckProxies()
 t = time.time()
