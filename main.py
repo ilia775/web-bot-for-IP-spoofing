@@ -49,7 +49,7 @@ def GetProxy(url):
     return
 
 
-async def is_bad_proxy(ipport):
+async def CheckProxy(ipport):
      try:
          session = aiohttp.ClientSession()
          resp = await session.get(test_url, proxy=ipport, timeout=timeout_sec)
@@ -88,7 +88,7 @@ def CheckProxies():
     asyncio.set_event_loop(loop)
     tasks = []
     for item in AllProxy:
-        tasks.append(asyncio.ensure_future(is_bad_proxy(item)))
+        tasks.append(asyncio.ensure_future(CheckProxy(item)))
     loop.run_until_complete(asyncio.wait(tasks))
     loop.close()
 #GetAllProxy()
