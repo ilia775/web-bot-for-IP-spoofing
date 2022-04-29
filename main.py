@@ -6,9 +6,7 @@ import aiohttp
 import requests
 
 
-
-
-proxy_type = "http"
+proxy_type = r"http://"
 test_url = r"https://github.com/"
 timeout_sec = 4
 GoodProxies = []
@@ -19,7 +17,8 @@ CurrentProxy = 0
 def GetAllProxy():
     global AllProxy
     AllProxy = []
-    urls=["https://www.socks-proxy.net/", "https://free-proxy-list.net/", "https://www.us-proxy.org/", "https://free-proxy-list.net/uk-proxy.html", "https://www.sslproxies.org/", "https://free-proxy-list.net/anonymous-proxy.html"]
+    urls = ["https://www.socks-proxy.net/", "https://free-proxy-list.net/", "https://www.us-proxy.org/", "https://free-proxy-list.net/uk-proxy.html", "https://www.sslproxies.org/", "https://free-proxy-list.net/anonymous-proxy.html"]
+    #urls = ["https://www.sslproxies.org/", "https://free-proxy-list.net/", "https://free-proxy-list.net/anonymous-proxy.html"]
     for url in urls:
         GetProxy(url)
 
@@ -30,7 +29,7 @@ def GetProxy(url):
     Table = soup.findAll('table')[0].tbody.findAll('td')
     for i in range(0, len(Table), 8):
         row = Table[i]
-        Proxy = 'http://'
+        Proxy = proxy_type
         Proxy += row.text + ':'
         i += 1
         row = Table[i]
@@ -59,15 +58,14 @@ async def GetData():
     global CurrentProxy
     try:
         async with aiohttp.ClientSession() as session:
-            async with session.get("https://min-api.cryptocompare.com/data/price?fsym=BTC&tsyms=USD,RUB,JPY,EUR", proxy = GoodProxies[CurrentProxy], timeout = 5 ) as resp:
-                print(resp.status)
-        #print(3)
+            async with session.get("https://min-api.cryptocompare.com/data/price?fsym=BTC&tsyms=RUB,USD,JPY,EUR", proxy = GoodProxies[CurrentProxy], timeout = timeout_sec) as resp:
+                print(await resp.text())
         await session.close()
     except:
         print(0)
-        CurrentProxy += 1
+        #CurrentProxy += 1
         await session.close()
-        if CurrentProxy > len(GoodProxies):
+        if CurrentProxy >= len(GoodProxies):
             return -1
 
 
@@ -80,18 +78,25 @@ def CheckProxies():
         tasks.append(asyncio.ensure_future(CheckProxy(item)))
     loop.run_until_complete(asyncio.wait(tasks))
     loop.close()
+timer = time.time()
 GetAllProxy()
 CheckProxies()
+
 t = time.time()
-timeout = 100
-while True :
+timeout = 600
+while True:
     if time.time() - t > timeout:
+        #GoodProxies = []
+        #AllProxy = []
         GetAllProxy()
         CheckProxies()
         CurrentProxy = 0
         t = time.time()
     if asyncio.run(GetData()) == -1:
+        CurrentProxy += 1
         t -= timeout
+    print(GoodProxies)
+    print(time.time() - timer)
 
 
 
