@@ -70,6 +70,7 @@ async def checkproxyhttp(ipport):
      try:
          #ipport = "http://" + ipport;
          session = aiohttp.ClientSession()
+         #print(UserAgent().random)
          resp = await session.get(test_url, proxy=ipport, headers = {'User-Agent' : UserAgent().random}, timeout=timeout_sec)
          await session.close()
          #print(resp.status)
@@ -87,9 +88,9 @@ def getdata(Proxy):
         s = requests.session();
         s.proxies = {"http":Proxy}
    
-        resp = s.get("https://min-api.cryptocompare.com/data/price?fsym=BTC&tsyms=RUB,USD,JPY,EUR")
+        resp = s.get("https://min-api.cryptocompare.com/data/price?fsym=BTC&tsyms=RUB,USD,JPY,EUR", headers = {'User-Agent' : UserAgent().random})
         if r"You are over your rate limit please upgrade your account!" in resp.text:
-            print(resp.text)
+            #print(resp.text)
             return -1
         s.close();
         print(resp.text)
@@ -139,6 +140,8 @@ if __name__ == "__main__":
             continue
         if getdata(str(GoodProxiesHTTP[CurrentProxy])) == -1:
             CurrentProxy += 1
+            if CurrentProxy >= len(GoodProxiesHTTP):
+                continue
             #t -= timeout
         if CurrentProxy >= len(proxy_list):
             t -= timeout
