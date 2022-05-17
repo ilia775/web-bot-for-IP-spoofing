@@ -76,9 +76,9 @@ async def checkproxyhttp(ipport):
          #print(resp.status)
          if resp.status != 200:
             raise "Error"
-         GoodProxiesHTTP.append(ipport[7:])
+         GoodProxiesHTTP.append(ipport)
      except:
-         print(2)
+         #print(2)
          await session.close()
 
 
@@ -86,11 +86,9 @@ def getdata(Proxy):
     #Proxies[CurrentProxy] = {"http": Proxies[CurrentProxy]};
     try:
         s = requests.session();
-        s.proxies = {"http":Proxy}
-   
-        resp = s.get("https://min-api.cryptocompare.com/data/price?fsym=BTC&tsyms=RUB,USD,JPY,EUR", headers = {'User-Agent' : UserAgent().random})
+        resp = s.get("https://min-api.cryptocompare.com/data/price?fsym=BTC&tsyms=RUB,USD,JPY,EUR", headers = {'User-Agent' : UserAgent().random}, proxies = {"http": Proxy, "https": Proxy}, timeout = timeout_sec)
         if r"You are over your rate limit please upgrade your account!" in resp.text:
-            #print(resp.text)
+            print(resp.text)
             return -1
         s.close();
         print(resp.text)
@@ -136,11 +134,11 @@ if __name__ == "__main__":
 
         if len(GoodProxiesHTTP) == 0:
             t -= timeout
-            print("pizda")
             continue
         if getdata(str(GoodProxiesHTTP[CurrentProxy])) == -1:
             CurrentProxy += 1
             if CurrentProxy >= len(GoodProxiesHTTP):
+                t -= timeout
                 continue
             #t -= timeout
         if CurrentProxy >= len(proxy_list):
