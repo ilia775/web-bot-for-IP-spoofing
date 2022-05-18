@@ -26,11 +26,6 @@ class Proxy:
     def __str__(self):
         return f"{'https' if self.is_https else 'http'}://{self.ip}:{self.port}"
 
-    def is_in(Proxy, list):
-        for i in list:
-            if Proxy == i:
-                return 1
-        return 0
 
 def getallproxy(proxy_list):
     urls = ["https://www.socks-proxy.net/", "https://free-proxy-list.net/", "https://www.us-proxy.org/", "https://free-proxy-list.net/uk-proxy.html", "https://www.sslproxies.org/", "https://free-proxy-list.net/anonymous-proxy.html"]
@@ -49,7 +44,7 @@ def getproxy(url, proxy_list):
                       #print(str(Proxy(i[0],i[1], i[6]))) 
                  #return [ str(Proxy(x[0], x[1], x[6])) for x in [ [el.text for el in tempt[i:i+8]] for i in range(0,len(tempt),8)]]
                  for i in [ [el.text for el in tempt[i:i+8]] for i in range(0,len(tempt),8)]:
-                     if is_in(Proxy(i[0], i[1], i[6]),proxy_list):
+                     if Proxy(i[0], i[1], i[6]) not in proxy_list:
                          proxy_list.append(Proxy(i[0], i[1], i[6]))
 
 def getproxy1(url):
