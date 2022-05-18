@@ -10,11 +10,8 @@ import random
 
 proxy_type = "http://"
 test_url = 'http://example.com'
-timeout_sec = 4
-GoodProxiesHTTP = []
-GoodProxiesHTTPS = []
-AllProxyHTTP = []
-AllProxyHTTPS = []
+timeout_sec = 2
+GoodProxies = []
 CurrentProxy = 0
 
 class Proxy:
@@ -23,9 +20,17 @@ class Proxy:
         self.port = port
         self.is_https = https == 'yes'
 
+    def __eq__(self, other):
+        return ((self.ip == other.ip) and (self.port == other.port) and (self.is_https == other.is_https))
+
     def __str__(self):
         return f"{'https' if self.is_https else 'http'}://{self.ip}:{self.port}"
 
+    def is_in(Proxy, list):
+        for i in list:
+            if Proxy == i:
+                return 1
+        return 0
 
 def getallproxy(proxy_list):
     urls = ["https://www.socks-proxy.net/", "https://free-proxy-list.net/", "https://www.us-proxy.org/", "https://free-proxy-list.net/uk-proxy.html", "https://www.sslproxies.org/", "https://free-proxy-list.net/anonymous-proxy.html"]
@@ -44,7 +49,8 @@ def getproxy(url, proxy_list):
                       #print(str(Proxy(i[0],i[1], i[6]))) 
                  #return [ str(Proxy(x[0], x[1], x[6])) for x in [ [el.text for el in tempt[i:i+8]] for i in range(0,len(tempt),8)]]
                  for i in [ [el.text for el in tempt[i:i+8]] for i in range(0,len(tempt),8)]:
-                     proxy_list.append(Proxy(i[0], i[1], i[6]))
+                     if is_in(Proxy(i[0], i[1], i[6]),proxy_list):
+                         proxy_list.append(Proxy(i[0], i[1], i[6]))
 
 def getproxy1(url):
 
@@ -76,7 +82,7 @@ async def checkproxyhttp(ipport):
          #print(resp.status)
          if resp.status != 200:
             raise "Error"
-         GoodProxiesHTTP.append(ipport)
+         GoodProxies.append(ipport)
      except:
          #print(2)
          await session.close()
@@ -86,7 +92,7 @@ def getdata(Proxy):
     #Proxies[CurrentProxy] = {"http": Proxies[CurrentProxy]};
     try:
         s = requests.session();
-        resp = s.get("https://min-api.cryptocompare.com/data/price?fsym=BTC&tsyms=RUB,USD,JPY,EUR", headers = {'User-Agent' : UserAgent().random}, proxies = {"http": Proxy, "https": Proxy}, timeout = timeout_sec)
+        resp = s.get("https://min-api.cryptocompare.com/data/price?fsym=BTC&tsyms=RUB,USD,JPY,EUR", headers = {'User-Agent' : UserAgent().random}, proxies = {"http": Proxy, "https": Proxy}, timeout = timeout_sec * 2)
         if r"You are over your rate limit please upgrade your account!" in resp.text:
             print(resp.text)
             return -1
@@ -117,27 +123,28 @@ if __name__ == "__main__":
     getallproxy(proxy_list)
     #print(len(proxy_list))
     checkproxy(proxy_list)
-    print(GoodProxiesHTTP)
+    print(GoodProxies)
     t = time.time()
-    timeout = 60
+    timeout = 60*60
     CurrentProxy = 0
     while True:
         if time.time() - t > timeout:
             print("timeout")
             print(time.time() - t)
             proxy_list = []
-            GoodProxiesHTTP = []
+            GoodProxies = []
             getallproxy(proxy_list)
             checkproxy(proxy_list)
+            print(GoodProxies)
             CurrentProxy = 0
             t = time.time()
 
-        if len(GoodProxiesHTTP) == 0:
+        if len(GoodProxies) == 0:
             t -= timeout
             continue
-        if getdata(str(GoodProxiesHTTP[CurrentProxy])) == -1:
+        if getdata(str(GoodProxies[CurrentProxy])) == -1:
             CurrentProxy += 1
-            if CurrentProxy >= len(GoodProxiesHTTP):
+            if CurrentProxy >= len(GoodProxies):
                 t -= timeout
                 continue
             #t -= timeout
