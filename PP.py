@@ -7,6 +7,7 @@ import os
 from fake_useragent import UserAgent
 import random
 import json
+from proxy_checking import ProxyChecker
 
 proxy_type = "http://"
 test_url = 'http://example.com'
@@ -66,17 +67,8 @@ def getproxy1(url):
             else:
                 AllProxyHTTPS.append(Proxy)
 
-async def checkproxyhttps(httpsproxy):
-    print("2")
-    try:
-        s = requests.Session()
-        resp = await s.get(test_url, headers = {'User-Agent' : UserAgent().random}, proxies = {"http": httpsproxy, "https": httpsproxy}, timeout = timeout_sec * 2)
-        if resp.status_code!=200: 
-            raise "Error"
-        GoodProxies.append(httpsproxy)
-    except:
-        return 
-        await s.close()
+
+
 
 async def checkproxyhttp(httpproxy):
      try:
@@ -99,25 +91,16 @@ def getdata(Query, Proxy):
         s = requests.session();
         resp = s.get(Query, headers = {'User-Agent' : UserAgent().random}, proxies = {"http": Proxy, "https": Proxy}, timeout = timeout_sec * 2)
         if r"You are over your rate limit please upgrade your account!" in resp.text:
-            print(resp.text)
-            print(0)
-            print(Proxy)
+            #print(resp.text)
+            #print(0)
+            #print(Proxy)
             return -1
         s.close();
         print(resp.text)
     except:
-        print(0)
-        print(Proxy)
+        #print(0)
+        #print(Proxy)
         return -1
-
-def getcoinlist():
-    coinlist = []
-    response = requests.get("https://min-api.cryptocompare.com/data/all/coinlist?summary=1")
-    coinlistjson = json.loads(response.text)
-    for i in coinlistjson["Data"]:
-        coinlist.append(i)
-    return coinlist
-    
 
 
 
@@ -133,15 +116,13 @@ def getquery():
             print("Эта валюта не поддерживается")
     Query += cc + "&tsyms="
     while True:
-        print("Выберите валюту для сравнения:")
+        print("Выберите валюту для сравнения:(нажмите n чтобы закончить)")
         cc = input()
+        if cc == 'n':
+            break
         response = requests.get(f"https://min-api.cryptocompare.com/data/price?fsym=BTC&tsyms={cc}")
         if "market does not exist for this coin pair" not in response.text and "tsyms param is empty or null" not in response.text:
             Query += cc + ','
-            print("Продолжить выбор?(нажмите n чтобы закончить)")
-            cc = input()
-            if cc == 'n':
-                break
         else:
             print("Эта валюта не поддерживается")
     return Query
@@ -168,7 +149,7 @@ if __name__ == "__main__":
     getallproxy(proxy_list)
     #print(len(proxy_list))
     checkproxy(proxy_list)
-    print(GoodProxies)
+    #print(GoodProxies)
     t = time.time()
     timeout = 60*60
     CurrentProxy = 0
@@ -180,7 +161,7 @@ if __name__ == "__main__":
             GoodProxies = []
             getallproxy(proxy_list)
             checkproxy(proxy_list)
-            print(GoodProxies)
+            #print(GoodProxies)
             CurrentProxy = 0
             t = time.time()
 
@@ -197,4 +178,4 @@ if __name__ == "__main__":
             t -= timeout
             continue
         #print(GoodProxiesHTTP)
-        print(time.time() - timer)
+        #print(time.time() - timer)
